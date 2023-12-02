@@ -19,17 +19,18 @@ impl i8x16 {
 
   // Create i8x16 from a simd vector
   pub const fn from_vec(value: __m128i) -> Self {
-    unsafe { transmute::<__m128i, i8x16>(value) }
+    i8x16 { value: value }
   }
 
   // Create i8x16 with all elements being set to `value`
-  pub const fn from_imm(value: i8) -> Self {
-    unsafe { transmute::<[i8; 16], i8x16>([value; 16]) }
+  #[inline(always)]
+  pub fn from_imm(value: i8) -> Self {
+    unsafe { i8x16::from_vec(_mm_set1_epi8(value)) }
   }
 
   // Create i8x16 with all elements being set to 0
   pub const fn zero() -> Self {
-    Self::from_imm(0)
+    unsafe { transmute::<[i8; 16], i8x16>([0; 16]) }
   }
 
   // Create i8x16 with elements starting from 0 to 15
@@ -89,7 +90,7 @@ impl i8x16 {
 
   // Hash function for i8x16
   // Uses crc32 intrinstinc to hash i8x16 to 32 bit unsigned integer
-  #[inline(always)]
+  #[inline(never)]
   pub fn hash(&self) -> u32 {
     let tmp = self.as_big_array();
     let mut result = 0;
