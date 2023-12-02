@@ -5,6 +5,7 @@ mod layer;
 mod pairs;
 mod search;
 mod tables;
+mod eqmask;
 mod unicount;
 mod applylayer;
 
@@ -26,7 +27,7 @@ fn main() {
     return;
   }
 
-  let goal: [i8; 16] = [  3, 3, 2, 2,12,13,11,10, 9, 8, 3, 2, 1, 0, 0, 1];
+  let goal: [i8; 16] = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3];
 
   search(goal);
 }

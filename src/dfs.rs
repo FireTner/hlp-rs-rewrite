@@ -13,8 +13,9 @@ pub fn dfs(depth: &usize, input: &i8x16, prev_index: &usize, tables: &Tables) ->
 
   for i in 0..tables.pairs[*prev_index].len() {
     let index = tables.pairs[*prev_index][i];
-    let output = apply_layer(&input, &tables.layers[index].layer, &tables.goal);
+    let output = apply_layer(&input, &tables.layers[index].layer, &tables);
 
+    if output == i8x16::zero() { continue; }
     if dfs(&(depth + 1), &output, &index, &tables) { return true; }
   }
 
@@ -43,10 +44,13 @@ pub fn last_layer(input: &i8x16, prev_index: &usize, tables: &Tables) -> bool {
 //
 // Calls dfs and recursively tries to bruteforce a solution
 pub fn first_layer(tables: &Tables) -> bool {
-  if tables.cur_layer == 0 { return false; }
+  if tables.cur_layer <= 1 { return false; }
 
   for i in 0..tables.layers.len() {
-    if dfs(&1, &tables.layers[i].layer, &i, &tables) { return true; }
+    let output = &tables.layers[i].layer;
+    
+    if apply_layer(&i8x16::start(), &output, &tables) == i8x16::zero() { continue; }
+    if dfs(&2, &output , &i, &tables) { return true; }
   }
 
   return false;

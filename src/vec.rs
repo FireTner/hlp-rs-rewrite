@@ -65,6 +65,12 @@ impl i8x16 {
   pub fn shuffle(&self, other: &i8x16) -> Self {
     unsafe { i8x16::from_vec(_mm_shuffle_epi8(self.value, other.value)) }
   }
+
+  // Make equality mask
+  // Create a bitmap for every element if equal then 1 otherwise 0
+  pub fn eqmask(&self, other: &i8x16) -> i32 {
+    unsafe { _mm_movemask_epi8(_mm_cmpeq_epi8(self.value, other.value)) }
+  }
 }
 
 // Implementation of addition
