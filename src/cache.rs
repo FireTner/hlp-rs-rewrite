@@ -12,6 +12,7 @@ pub static mut NEW: usize = 0;
 pub static mut MISS: usize = 0;
 
 impl Cache {
+  // Creates an empty cache
   pub fn new() -> Self {
     Cache {
       depth: [0; CACHE_SIZE as usize],
@@ -19,6 +20,11 @@ impl Cache {
     }
   }
 
+  // Checks if cache contains a value at valid depth
+  // Takes value and depth as parameters
+  // Returns boolean if value is found at a valid depth
+  //
+  // If a value is found at lower or same depth return true otherwise false
   #[inline(always)]
   pub fn contains(&mut self, value: &i8x16, depth: &i8) -> bool {
     let pos: u32 = value.hash() & (CACHE_SIZE - 1);
