@@ -69,6 +69,11 @@ impl Layer {
     }
   }
 
+  // Prints the configuration of a layer
+  // Takes Layer as a parameter
+  //
+  // Prints configuration as a string
+  // Format: SV,_SV;_ where S is symbol and V is 1 character value
   pub fn print(self) {
     let back =  self.layerconf       & 0xF;
     let side = (self.layerconf >> 4) & 0xF;
@@ -89,6 +94,7 @@ impl Layer {
     };
   }
 
+  // Returns an empty layer
   pub const fn empty() -> Layer {
     Layer { layer: i8x16::zero(), layerconf: 0 }
   }
