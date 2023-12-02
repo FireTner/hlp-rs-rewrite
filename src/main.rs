@@ -3,6 +3,7 @@ mod lut;
 mod dfs;
 mod layer;
 mod pairs;
+mod cache;
 mod search;
 mod tables;
 mod eqmask;
@@ -22,7 +23,7 @@ use crate::search::search;
 //  3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3 -> pi
 
 fn main() {
-  if !is_x86_feature_detected!("avx") || !is_x86_feature_detected!("sse3") || !is_x86_feature_detected!("sse4.1") {
+  if !is_x86_feature_detected!("avx") || !is_x86_feature_detected!("sse3") || !is_x86_feature_detected!("sse4.1") || !is_x86_feature_detected!("sse4.2") {
     eprintln!("Missing some features");
     return;
   }

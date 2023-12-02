@@ -1,4 +1,5 @@
 use std::time::Instant;
+use chrono::Local;
 
 use crate::unicount::unicount;
 use crate::pairs::gen_pairs;
@@ -8,8 +9,9 @@ use crate::vec::i8x16;
 use crate::dfs::{first_layer, ITERATIONS};
 use crate::tables::Tables;
 use crate::eqmask::gen_eqmask;
+use crate::cache::*;
 
-const MAX_DEPTH: usize = 42;
+const MAX_DEPTH: i8 = 42;
 
 pub fn search(goal: [i8; 16]) {
   let goal_vec: i8x16 = i8x16::from_array(&goal);
@@ -32,14 +34,21 @@ pub fn search(goal: [i8; 16]) {
   // Search
   let start_time = Instant::now();
   for currentlayer in 1..=MAX_DEPTH {
-    println!("Starting search at {}", currentlayer);
+    let local_time = Local::now();
+    
+    println!("[{}] Starting search at {}", local_time.format("%H:%M:%S%.f"), currentlayer);
+
     if first_layer(&Tables { cur_layer: currentlayer, layers: layers.clone(), pairs: pairs.0.clone(), goal: goal_vec, goal_eqmask: goal_eqmask }) {
       println!("Found at {} depth", currentlayer);
       return;
     }
-    println!("Iterations: {}", unsafe { ITERATIONS });
+
+    unsafe {
+      println!("\tIterations: {}", ITERATIONS );
+      println!("\tHits: {} \tMisses: {} \tInitialized: {}", HIT, MISS, NEW );
+    }
 
 
-    println!("Finished searching in {} ms\n", start_time.elapsed().as_millis());
+    println!("\tFinished searching in {} ms\n", start_time.elapsed().as_millis());
   }
 }
