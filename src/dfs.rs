@@ -1,9 +1,12 @@
+use crate::layer::Layer;
 use crate::vec::i8x16;
 use crate::cache::*;
 use crate::tables::Tables;
 use crate::applylayer::apply_layer;
+use crate::search::MAX_DEPTH;
 
 pub static mut ITERATIONS: usize = 0;
+pub static mut RESULT: [Layer; MAX_DEPTH as usize] = [Layer::empty(); MAX_DEPTH as usize];
 
 // Depth first search function
 // Takes depth, output of previous function, previous index, and `tables` as parameters
@@ -19,14 +22,17 @@ pub fn dfs(depth: &i8, input: &i8x16, prev_index: &usize, tables: &Tables, cache
 
   for i in 0..pair.len() {
     let index = pair[i];
-    let layer = &tables.layers[index].layer;
-    let output = apply_layer(&input, layer, &tables);
+    let layer = tables.layers[index];
+    let output = apply_layer(&input, &layer.layer, &tables);
     
     if output == i8x16::zero() { continue; }
 
     unsafe { ITERATIONS += 1; }
 
-    if dfs(&(depth + 1), &output, &index, &tables, cache) { return true; }
+    if dfs(&(depth + 1), &output, &index, &tables, cache) {
+      unsafe { RESULT[(depth - 1) as usize] = layer; }
+      return true;
+    }
   }
 
   return false;
@@ -43,12 +49,15 @@ pub fn last_layer(input: &i8x16, prev_index: &usize, tables: &Tables) -> bool {
 
   for i in 0..pair.len() {
     let index = pair[i];
-    let layer = tables.layers[index].layer;
-    let output = i8x16::shuffle(&layer, &input);
+    let layer = tables.layers[index];
+    let output = i8x16::shuffle(&layer.layer, &input);
 
     unsafe { ITERATIONS += 1 };
 
-    if output == tables.goal { return true; }
+    if output == tables.goal {
+      unsafe { RESULT[(tables.cur_layer - 1) as usize] = layer; }
+      return true;
+    }
   }
 
   return false;
@@ -71,11 +80,15 @@ pub fn first_layer(tables: &Tables) -> bool {
   let mut cache: Box<Cache> = Box::new(Cache::new());
 
   for i in 0..tables.layers.len() {
-    let output = apply_layer(&i8x16::start(), &tables.layers[i].layer, &tables);
+    let layer = tables.layers[i];
+    let output = apply_layer(&i8x16::start(), &layer.layer, &tables);
     
     if output == i8x16::zero() { continue; }
 
-    if dfs(&2, &output, &i, &tables, &mut cache) { return true; }
+    if dfs(&2, &output, &i, &tables, &mut cache) {
+      unsafe { RESULT[0] = layer; }
+      return true;
+    }
   }
 
   return false;

@@ -1,4 +1,5 @@
 use std::ops::*;
+use std::mem::transmute;
 
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
@@ -12,34 +13,27 @@ pub struct i8x16 {
 // Implementation of declaration
 impl i8x16 {
   // Create i8x16 from an array
-  #[inline(always)]
-  pub fn from_array(value: &[i8; 16]) -> Self {
-    unsafe {
-      i8x16 { 
-        value: _mm_set_epi8(value[15], value[14], value[13], value[12], value[11], value[10], value[9], value[8], value[7], value[6], value[5], value[4], value[3], value[2], value[1], value[0]),
-      }
-    }
+  pub const fn from_array(value: &[i8; 16]) -> Self {
+    unsafe { transmute::<[i8; 16], i8x16>(*value) }
   }
 
   // Create i8x16 from a simd vector
-  #[inline(always)]
-  pub fn from_vec(value: __m128i) -> Self {
-    i8x16 { value: value }
+  pub const fn from_vec(value: __m128i) -> Self {
+    unsafe { transmute::<__m128i, i8x16>(value) }
   }
 
   // Create i8x16 with all elements being set to `value`
-  #[inline(always)]
-  pub fn from_imm(value: i8) -> Self {
-    unsafe { i8x16 { value: _mm_set1_epi8(value) } }
+  pub const fn from_imm(value: i8) -> Self {
+    unsafe { transmute::<[i8; 16], i8x16>([value; 16]) }
   }
 
   // Create i8x16 with all elements being set to 0
-  #[inline(always)]
-  pub fn zero() -> Self { i8x16::from_imm(0) }
+  pub const fn zero() -> Self {
+    Self::from_imm(0)
+  }
 
   // Create i8x16 with elements starting from 0 to 15
-  #[inline(always)]
-  pub fn start() -> Self { i8x16::from_array(&[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) }
+  pub const fn start() -> Self { i8x16::from_array(&[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) }
 
   // Returns an array from i8x16
   #[inline(always)]

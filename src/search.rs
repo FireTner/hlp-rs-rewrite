@@ -6,12 +6,12 @@ use crate::pairs::gen_pairs;
 use crate::layer::Layer;
 use crate::lut::gen_lut;
 use crate::vec::i8x16;
-use crate::dfs::{first_layer, ITERATIONS};
+use crate::dfs::{first_layer, ITERATIONS, RESULT};
 use crate::tables::Tables;
 use crate::eqmask::gen_eqmask;
 use crate::cache::*;
 
-const MAX_DEPTH: i8 = 42;
+pub const MAX_DEPTH: i8 = 42;
 
 pub fn search(goal: [i8; 16]) {
   let goal_vec: i8x16 = i8x16::from_array(&goal);
@@ -40,6 +40,10 @@ pub fn search(goal: [i8; 16]) {
 
     if first_layer(&Tables { cur_layer: currentlayer, layers: layers.clone(), pairs: pairs.0.clone(), goal: goal_vec, goal_eqmask: goal_eqmask }) {
       println!("Found at {} depth", currentlayer);
+      for i in 0..currentlayer {
+        unsafe { RESULT[i as usize].print(); }
+      }
+      println!();
       return;
     }
 
