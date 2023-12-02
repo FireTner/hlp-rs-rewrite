@@ -5,7 +5,7 @@ use crate::pairs::gen_pairs;
 use crate::layer::Layer;
 use crate::lut::gen_lut;
 use crate::vec::i8x16;
-use crate::dfs::first_layer;
+use crate::dfs::{first_layer, ITERATIONS};
 use crate::tables::Tables;
 use crate::eqmask::gen_eqmask;
 
@@ -37,6 +37,9 @@ pub fn search(goal: [i8; 16]) {
       println!("Found at {} depth", currentlayer);
       return;
     }
+    println!("Iterations: {}", unsafe { ITERATIONS });
+
+
     println!("Finished searching in {} ms\n", start_time.elapsed().as_millis());
   }
 }
