@@ -11,6 +11,7 @@ pub struct i8x16 {
 
 // Implementation of declaration
 impl i8x16 {
+  // Create i8x16 from an array
   pub fn from_array(value: &[i8; 16]) -> Self {
     unsafe {
       i8x16 { 
@@ -19,18 +20,23 @@ impl i8x16 {
     }
   }
 
+  // Create i8x16 from a simd vector
   pub fn from_vec(value: __m128i) -> Self {
     i8x16 { value: value }
   }
 
+  // Create i8x16 with all elements being set to `value`
   pub fn from_imm(value: i8) -> Self {
     unsafe { i8x16 { value: _mm_set1_epi8(value) } }
   }
 
+  // Create i8x16 with all elements being set to 0
   pub fn zero() -> Self { i8x16::from_imm(0) }
 
+  // Create i8x16 with elements starting from 0 to 15
   pub fn start() -> Self { i8x16::from_array(&[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) }
 
+  // Returns an array from i8x16
   pub fn as_array(&self) -> [i8; 16] {
     let mut tmp: [i8; 16] = [0; 16];
 
@@ -39,17 +45,17 @@ impl i8x16 {
     return tmp;
   }
 
-  // Compares packed 8-bit integers in a and b and returns packed maximum values in dst
+  // Compares the two values and returns the bigger
   pub fn max(&self, other: &Self) -> Self {
     unsafe { i8x16::from_vec(_mm_max_epi8(self.value, other.value)) }
   }
 
-  // Computes the bitwise NOT of 128 bits (representing integer data) in a and then AND with b
+  // Computes not with `a` and returns bitwise and with `b`
   pub fn andnot(&self, other: &Self) -> Self {
     unsafe { i8x16::from_vec(_mm_andnot_si128(self.value, other.value)) }
   }
 
-  // Compares packed 8-bit integers in a and b for less-than 
+  // Compares every element and sets to -1 if true otherwise sets to 0 
   pub fn cmplt(&self, other: &Self) -> Self {
     unsafe { i8x16::from_vec(_mm_cmplt_epi8(self.value, other.value)) }
   }
