@@ -22,7 +22,7 @@ use crate::search::search;
 
 fn main() {
   if !is_x86_feature_detected!("avx") || !is_x86_feature_detected!("sse3") || !is_x86_feature_detected!("sse4.1") {
-    println!("Missing some features");
+    eprintln!("Missing some features");
     return;
   }
 
