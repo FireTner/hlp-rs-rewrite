@@ -1,9 +1,9 @@
 use crate::applylayer::apply_layer;
 
 use crate::tables::Tables;
+use crate::cache::Cache;
 use crate::layer::Layer;
 use crate::vec::i8x16;
-use crate::{cache::*, distcheck};
 
 const MAX_DEPTH: usize = 42;
 
