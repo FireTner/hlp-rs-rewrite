@@ -5,7 +5,7 @@ use crate::vec::i8x16;
 // Takes input to transmute, mask to transmute by, and goal as parameters
 // Returns the transmuted i8x16
 #[inline(always)]
-pub fn apply_layer(input: &i8x16, mask: &i8x16, tables: &Tables) -> i8x16 {
+pub fn apply_layer(input: &i8x16, mask: &i8x16, tables: &mut Tables) -> i8x16 {
   let result = mask.shuffle(input);
   let result_array = result.as_array();
 

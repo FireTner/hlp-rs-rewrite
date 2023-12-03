@@ -5,11 +5,10 @@ const CACHE_SIZE: u32 = 1 << 25;
 pub struct Cache {
   pub depth: [i8; CACHE_SIZE as usize],
   pub layer: [i8x16; CACHE_SIZE as usize],
+  pub hit: usize,
+  pub new: usize,
+  pub miss: usize,
 }
-
-pub static mut HIT: usize = 0;
-pub static mut NEW: usize = 0;
-pub static mut MISS: usize = 0;
 
 impl Cache {
   // Creates an empty cache
@@ -17,6 +16,9 @@ impl Cache {
     Cache {
       depth: [0; CACHE_SIZE as usize],
       layer: [i8x16::zero(); CACHE_SIZE as usize],
+      hit: 0,
+      new: 0,
+      miss: 0,
     }
   }
 
@@ -34,11 +36,9 @@ impl Cache {
 
     let found = cached_depth <= *depth && cached_value == *value;
     
-    unsafe {
-      if found { HIT += 1; }
-      else if self.layer[pos as usize] == i8x16::zero() { NEW += 1; }
-      else { MISS += 1; }
-    }
+    if found { self.hit += 1; }
+    else if self.layer[pos as usize] == i8x16::zero() { self.new += 1; }
+    else { self.miss += 1; }
 
     if found { return true; }
 
