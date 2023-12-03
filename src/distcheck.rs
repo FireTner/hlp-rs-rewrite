@@ -1,11 +1,16 @@
 use crate::vec::i8x16;
 use crate::layer::Layer;
 
+// number of elements
 const ELEMENT_COUNT: usize = 4;
+// number of tables
 const TABLE_COUNT: usize = 4;
+// maximum depth for precalculating tables
 const MAX_TABLE_DEPTH: i8 = 10;
 
+// Don't change
 const TABLE_SIZE: usize = 1 << (ELEMENT_COUNT * 4);
+// Offsets for each element
 const OFFSET_TABLE: [usize; ELEMENT_COUNT] = [0, 4, 8, 12];
 
 #[derive(Clone)]
@@ -16,6 +21,15 @@ pub struct DistanceTable {
 }
 
 impl DistanceTable {
+  // Generates a table of depths
+  // Takes depth and look up table as parameters
+  //
+  // Generates a table of depths that can reach the next depth
+  // from the current depth supplied by depth parameter
+  //
+  // This works by trying every input, applying layer on it
+  // and checking if it reaches already recorded output
+  // then it stores the depth of output + 1
   pub fn generate(&mut self, depth: &i8, layers: &Vec<Layer>) {
     for index in 0..layers.len() {
       for input in 0..TABLE_SIZE {
@@ -43,6 +57,12 @@ impl DistanceTable {
     }
   }
 
+  // Makes a new distance table
+  // Takes goal and look up table as parameters
+  // Returns DistanceTable
+  //
+  // Sets a goal and repeatedly calls generate until
+  // there's no new depths
   pub fn new(goal: &i8x16, tables: &Vec<Layer>) -> DistanceTable {
     let mut result = DistanceTable {
       tables: [[100; TABLE_SIZE]; TABLE_COUNT],
@@ -50,21 +70,19 @@ impl DistanceTable {
       total: 0,
     };
 
+    // Sets goal as depth 0
     let goal_array = goal.as_array();
-
     for i in 0..TABLE_COUNT {
       let offset = Self::to_offset(&goal_array, OFFSET_TABLE[i]);
       result.tables[i][offset] = 0;
     }
-
-    result.generate(&0, &tables);
     
+    // Tries every depth until it can't generate more
     let mut prev_total = 0;
     for i in 0..MAX_TABLE_DEPTH {
       result.generate(&i, &tables);
 
       if prev_total == result.total { break; }
-      
       prev_total = result.total;
 
       for i in 0..TABLE_COUNT {
