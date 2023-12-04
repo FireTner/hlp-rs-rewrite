@@ -11,7 +11,7 @@ const MAX_TABLE_DEPTH: i8 = 10;
 // Don't change
 const TABLE_SIZE: usize = 1 << (ELEMENT_COUNT * 4);
 // Offsets for each element
-const OFFSET_TABLE: [usize; ELEMENT_COUNT] = [0, 4, 8, 12];
+const OFFSET_TABLE: [usize; TABLE_COUNT] = [0, 4, 8, 12];
 
 #[derive(Clone)]
 pub struct DistanceTable {
