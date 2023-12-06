@@ -99,7 +99,7 @@ impl DistanceTable {
     let mut result = 0;
 
     for i in 0..ELEMENT_COUNT {
-      result |= (value[start + i] as usize) << (i * 4);
+      result |= (value[(start + i) & 0xF] as usize) << (i * 4);
     }
 
     return result;
