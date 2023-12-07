@@ -4,6 +4,7 @@ use crate::cache::*;
 use crate::tables::Tables;
 use crate::applylayer::apply_layer;
 use crate::search::MAX_DEPTH;
+use crate::distance::distance;
 
 pub static mut ITERATIONS: usize = 0;
 pub static mut RESULT: [Layer; MAX_DEPTH as usize] = [Layer::empty(); MAX_DEPTH as usize];
@@ -26,6 +27,7 @@ pub fn dfs(depth: &i8, input: &i8x16, prev_index: &usize, tables: &Tables, cache
     let output = apply_layer(&input, &layer.layer, &tables);
     
     if output == i8x16::zero() { continue; }
+    if distance(&tables.goal.as_array(), &output.as_array(), tables.cur_layer - depth) { continue; }
 
     unsafe { ITERATIONS += 1; }
 

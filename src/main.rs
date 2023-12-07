@@ -8,6 +8,7 @@ mod search;
 mod tables;
 mod eqmask;
 mod unicount;
+mod distance;
 mod applylayer;
 
 extern crate num;
